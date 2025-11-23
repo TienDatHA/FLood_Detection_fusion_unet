@@ -35,7 +35,11 @@ def aggregate_metrics(regions: List[str], base_path: Path = None) -> Dict[str, A
         Dict chứa metrics tổng hợp
     """
     if base_path is None:
-        base_path = Path("/mnt/hdd2tb/Uni-Temporal-Flood-Detection-Sentinel-1_Frontiers22/inference_results/benchmarks")
+        # Import config for flexible path resolution
+        import sys
+        sys.path.insert(0, str(Path(__file__).parent))
+        from config import get_data_root
+        base_path = get_data_root() / "inference_results/benchmarks"
     
     all_metrics = []
     valid_regions = []
@@ -229,11 +233,17 @@ def save_aggregated_results(results: Dict[str, Any], output_path: Path):
 
 
 def main():
+    # Import config for default path
+    import sys
+    sys.path.insert(0, str(Path(__file__).parent))
+    from config import get_data_root
+    default_base_path = str(get_data_root() / "inference_results/benchmarks")
+    
     parser = argparse.ArgumentParser(description="Tính toán metrics tổng hợp từ nhiều khu vực")
     parser.add_argument("--regions", nargs="+", required=True, 
                        help="Danh sách các khu vực cần phân tích")
     parser.add_argument("--base_path", type=str, 
-                       default="/mnt/hdd2tb/Uni-Temporal-Flood-Detection-Sentinel-1_Frontiers22/inference_results/benchmarks",
+                       default=default_base_path,
                        help="Đường dẫn gốc chứa các khu vực")
     parser.add_argument("--output", type=str,
                        default="inference_results/aggregated_metrics.json",

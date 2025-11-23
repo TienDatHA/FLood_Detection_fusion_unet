@@ -19,18 +19,46 @@ import numpy as np
 import rasterio
 from rasterio.warp import reproject, Resampling
 
-# ================== CẤU HÌNH (SỬA Ở ĐÂY) ==================
-DEM_PATH        = Path("/mnt/hdd2tb/Uni-Temporal-Flood-Detection-Sentinel-1_Frontiers22/Bench_Mark/JRC + DEM/BacGiang_20240910_DEM.tif")
-JRC_PATH        = Path("/mnt/hdd2tb/Uni-Temporal-Flood-Detection-Sentinel-1_Frontiers22/Bench_Mark/JRC + DEM/BacGiang_20240910_occurrence.tif")
-MORPHO_TIF      = Path("/home/datpt/Documents/C_Huong/Bacgiang_ 2024/BacGiang_0.6/BacGiang_20240910_merged_morph.tif")
+# Add configuration import
+import sys
+sys.path.insert(0, str(Path(__file__).parent))
+from config import get_data_root, get_project_root, ensure_dirs
+import os
 
-OUT_STATIC_TIF  = Path("/mnt/hdd2tb/Uni-Temporal-Flood-Detection-Sentinel-1_Frontiers22/Bench_Mark/test_final/output_static_water_mask.tif")
-OUT_FINAL_TIF   = Path("/mnt/hdd2tb/Uni-Temporal-Flood-Detection-Sentinel-1_Frontiers22/Bench_Mark/test_final/final_flood_mask.tif")
+# ================== CONFIGURATION (EDIT HERE) ==================
+DATA_ROOT = get_data_root()
+PROJECT_ROOT = get_project_root()
 
-DELTA_M         = 5.0    # ngưỡng DEM: min(DEM) + 5 m (giảm từ 10m)
-JRC_THRESHOLD   = 99     # % occurrence/recurrence coi là nước tĩnh (chỉ những pixel rất chắc chắn)
-JRC_BAND_INDEX  = 1      # 1-based
-JRC_IS_PERCENT  = True   # True nếu JRC 0–100; False nếu JRC 0–1
+# Example configuration - modify these as needed
+REGION_NAME = os.getenv("REGION_NAME", "BacGiang_20240910")
+MORPH_THRESHOLD = os.getenv("MORPH_THRESHOLD", "0.6")
+
+# Input paths relative to DATA_ROOT
+DEM_PATH = DATA_ROOT / f"Bench_Mark/JRC + DEM/{REGION_NAME}_DEM.tif"
+JRC_PATH = DATA_ROOT / f"Bench_Mark/JRC + DEM/{REGION_NAME}_occurrence.tif"
+MORPHO_TIF = DATA_ROOT / f"morphology_results/{REGION_NAME}_{MORPH_THRESHOLD}/{REGION_NAME}_merged_morph.tif"
+
+# Output paths relative to PROJECT_ROOT  
+OUTPUT_DIR = PROJECT_ROOT / "final_flood_results" / REGION_NAME
+OUT_STATIC_TIF = OUTPUT_DIR / "output_static_water_mask.tif"
+OUT_FINAL_TIF = OUTPUT_DIR / "final_flood_mask.tif"
+
+# Ensure output directory exists
+ensure_dirs([OUTPUT_DIR])
+
+# Parameters
+DELTA_M = float(os.getenv("DELTA_M", "5.0"))           # DEM threshold: min(DEM) + 5 m
+JRC_THRESHOLD = int(os.getenv("JRC_THRESHOLD", "99"))   # % occurrence/recurrence for static water
+JRC_BAND_INDEX = 1                                      # 1-based
+JRC_IS_PERCENT = True                                   # True if JRC 0–100; False if JRC 0–1
+
+print(f"📍 Final Flood Map Configuration:")
+print(f"   DATA_ROOT: {DATA_ROOT}")
+print(f"   Region: {REGION_NAME}")
+print(f"   DEM: {DEM_PATH}")
+print(f"   JRC: {JRC_PATH}")
+print(f"   Morphology: {MORPHO_TIF}")
+print(f"   Output dir: {OUTPUT_DIR}")
 
 # =============== HÀM PHỤ DÙNG CHUNG ===============
 

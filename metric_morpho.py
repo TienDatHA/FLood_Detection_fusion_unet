@@ -11,15 +11,41 @@ import json, csv
 import numpy as np
 import rasterio
 from rasterio.warp import reproject, Resampling
+import os
+import sys
 
-# =============== CẤU HÌNH (SỬA Ở ĐÂY) =================
-AFTER_MORPH_PATH       = Path("/mnt/hdd2tb/Uni-Temporal-Flood-Detection-Sentinel-1_Frontiers22/inference_results/change_detection/BinhDinh_change_detection_20171110/BinhDinh_20171110_after_raw.tif")
-LABEL_PATH             = Path("/mnt/hdd2tb/Uni-Temporal-Flood-Detection-Sentinel-1_Frontiers22/Bench_Mark/Label_4326/BinhDinh_20171110.tif")
-RAW_INTERSECTION_PATH  = Path("/mnt/hdd2tb/Uni-Temporal-Flood-Detection-Sentinel-1_Frontiers22/inference_results/change_detection/BinhDinh_change_detection_20171110/raw_intersection.tif")  # hoặc None
-OUTDIR                 = Path("/mnt/hdd2tb/Uni-Temporal-Flood-Detection-Sentinel-1_Frontiers22/eval_results/BinhDinh_20171110")
-THRESH_PRED            = 0.5
-THRESH_LABEL           = 0.5
-# =======================================================
+# Add current directory to Python path to import config
+sys.path.insert(0, str(Path(__file__).parent))
+from config import get_data_root, get_project_root
+
+# =============== CONFIGURATION (EDIT HERE) =================
+# Get configurable data root
+DATA_ROOT = get_data_root()
+PROJECT_ROOT = get_project_root()
+
+# Example configuration - modify these paths as needed
+REGION_NAME = os.getenv("REGION_NAME", "BinhDinh_20171110")
+DETECTION_DATE = os.getenv("DETECTION_DATE", "20171110") 
+
+# Paths relative to DATA_ROOT
+AFTER_MORPH_PATH = DATA_ROOT / f"inference_results/change_detection/{REGION_NAME}_change_detection_{DETECTION_DATE}/{REGION_NAME}_{DETECTION_DATE}_after_raw.tif"
+LABEL_PATH = DATA_ROOT / f"Bench_Mark/Label_4326/{REGION_NAME}.tif"
+RAW_INTERSECTION_PATH = DATA_ROOT / f"inference_results/change_detection/{REGION_NAME}_change_detection_{DETECTION_DATE}/raw_intersection.tif"  # or None
+
+# Output directory relative to PROJECT_ROOT
+OUTDIR = PROJECT_ROOT / "eval_results" / REGION_NAME
+
+# Thresholds
+THRESH_PRED = float(os.getenv("THRESH_PRED", "0.5"))
+THRESH_LABEL = float(os.getenv("THRESH_LABEL", "0.5"))
+
+# Print configuration for verification
+print(f"📍 Configuration:")
+print(f"   DATA_ROOT: {DATA_ROOT}")
+print(f"   PROJECT_ROOT: {PROJECT_ROOT}")
+print(f"   Region: {REGION_NAME}")
+print(f"   Output dir: {OUTDIR}")
+# =============================================================
 
 
 def _safe_div(num, den):

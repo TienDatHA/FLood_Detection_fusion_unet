@@ -435,11 +435,28 @@ def merge_directory(input_dir, output_path, method='first', nodata=None, recursi
 
 
 if __name__ == "__main__":
-    # ====== CẤU HÌNH ======
-    INPUT_DIR = "/mnt/hdd2tb/Unosat/GEE_EXPORTS/DEM/3"
-    OUTPUT_FILE = "/mnt/hdd2tb/Unosat/GEE_EXPORTS/DEM/3/VietNamFlood_20221015_DEM.tif"
+    # Import config for flexible path resolution  
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).parent))
+    from config import get_data_root, get_project_root, ensure_dirs
+    
+    # ====== CONFIGURATION ======
+    DATA_ROOT = get_data_root()
+    
+    # Use environment variables for configuration
+    REGION_NAME = os.getenv("REGION_NAME", "VietNamFlood_20221015")
+    INPUT_DIR = str(DATA_ROOT / "GEE_EXPORTS/DEM/tiles")
+    OUTPUT_FILE = str(DATA_ROOT / f"GEE_EXPORTS/DEM/{REGION_NAME}_DEM.tif")
     MERGE_METHOD = "first"   # 'first'|'last'|'min'|'max'|'sum'|'count'|'mean'
-    NODATA_VALUE = None      # None để auto-detect, hoặc đặt -9999
+    NODATA_VALUE = None      # None for auto-detect, or set -9999
+    
+    # Ensure output directory exists
+    ensure_dirs([Path(OUTPUT_FILE).parent])
+    
+    print(f"📍 Merge Configuration:")
+    print(f"   Input dir: {INPUT_DIR}")
+    print(f"   Output file: {OUTPUT_FILE}")
 
     print("🚀 ENHANCED MERGE - PHÂN TÍCH CHI TIẾT DATA")
     print("=" * 80)

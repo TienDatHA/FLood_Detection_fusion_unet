@@ -2,6 +2,24 @@
 
 This document describes how to set up the environment, configure, train, evaluate, and run inference for the Fusion_fLood project.
 
+## 🐳 Quick Start with Docker (Recommended)
+
+For the fastest setup with all dependencies pre-configured:
+
+```bash
+# Clone and setup
+git clone https://github.com/TienDatHA/FLodd_Detection_fusion_unet.git
+cd FLodd_Detection_fusion_unet
+
+# Build and run
+./docker-helper.sh build
+./docker-helper.sh dev    # For development with Jupyter
+./docker-helper.sh train  # For training
+
+# See complete Docker guide
+open DOCKER_SETUP.md
+```
+
 ## Overview
 
 This repository contains code to train and evaluate a U-Net model combined with ResNet50 for flood detection based on Sentinel-1 (Sen1Flood11). Main files:

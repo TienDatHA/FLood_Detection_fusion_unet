@@ -8,15 +8,35 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from matplotlib.colors import LightSource
 
-# =================== CẤU HÌNH (SỬA Ở ĐÂY) ===================
-# Chọn 1 trong 2 cách:
-DEM_PATH = "/mnt/hdd2tb/Uni-Temporal-Flood-Detection-Sentinel-1_Frontiers22/Bench_Mark/JRC + DEM/BacGiang_20240910_DEM.tif"   # một file cụ thể
-DEM_GLOB = None  # ví dụ: "/mnt/hdd2tb/dem_examples/*.tif"  (nếu muốn chạy hàng loạt)
+# Add configuration import
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent))
+from config import get_data_root, get_project_root, ensure_dirs
 
-OUTDIR   = "dem_visualizations"  # thư mục xuất PNG trong code directory
+# =================== CONFIGURATION (EDIT HERE) ===================
+DATA_ROOT = get_data_root()
+PROJECT_ROOT = get_project_root()
+
+# Example configuration - modify these as needed
+REGION_NAME = os.getenv("REGION_NAME", "BacGiang_20240910")
+
+# Choose 1 of 2 methods:
+DEM_PATH = str(DATA_ROOT / f"Bench_Mark/JRC + DEM/{REGION_NAME}_DEM.tif")  # specific file
+DEM_GLOB = None  # example: str(DATA_ROOT / "dem_examples/*.tif") for batch processing
+
+OUTDIR = str(PROJECT_ROOT / "dem_visualizations")  # PNG output directory in project
 PMIN, PMAX = 2.0, 98.0                # percentile stretch
-CMAP = "terrain"                      # colormap cho elevation
-TITLE = None                          # tiêu đề chung (None = tự theo tên file)
+CMAP = "terrain"                       # colormap for elevation  
+TITLE = None                           # common title (None = auto from filename)
+
+# Ensure output directory exists
+ensure_dirs([Path(OUTDIR)])
+
+print(f"📍 DEM Visualization Configuration:")
+print(f"   DATA_ROOT: {DATA_ROOT}")  
+print(f"   DEM file: {DEM_PATH}")
+print(f"   Output dir: {OUTDIR}")
 
 # =================== TIỆN ÍCH ===================
 def _read_dem(path):

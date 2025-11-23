@@ -1,0 +1,176 @@
+version: '3.8'
+
+services:
+  # ============================================================================
+  # Main Flood Detection Service
+  # ============================================================================
+  flood-detection:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: app  # or 'dev' for development, 'prod' for production
+    image: flood-detection:latest
+    container_name: flood_detection_app
+    
+    # GPU support (requires nvidia-docker2)
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    
+    # Environment variables
+    env_file:
+      - docker.env
+    environment:
+      DATA_ROOT: /app/data
+      PROJECT_ROOT: /app
+      PYTHONPATH: /app
+      CUDA_VISIBLE_DEVICES: "0"
+    
+    # Volume mounts
+    volumes:
+      # Data directory (modify path to your local data)
+      - ./data:/app/data:ro  # Read-only data mount
+      # Output directories (writable)
+      - ./outputs:/app/outputs
+      - ./models:/app/models
+      - ./logs:/app/logs
+      - ./training_logs:/app/training_logs
+      - ./evaluation_logs:/app/evaluation_logs
+      - ./inference_results:/app/inference_results
+      - ./visual_outputs:/app/visual_outputs
+      - ./dem_visualizations:/app/dem_visualizations
+      - ./final_flood_results:/app/final_flood_results
+      - ./eval_results:/app/eval_results
+      # For development: mount source code
+      # - .:/app
+    
+    # Port mappings
+    ports:
+      - "8888:8888"  # Jupyter Notebook
+      - "6006:6006"  # TensorBoard
+    
+    # Keep container running
+    stdin_open: true
+    tty: true
+    
+    # Working directory
+    working_dir: /app
+    
+    # Default command (can be overridden)
+    command: tail -f /dev/null
+    
+    # Resource limits
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  # ============================================================================
+  # Development Environment (Jupyter + TensorBoard)
+  # ============================================================================
+  jupyter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    image: flood-detection:dev
+    container_name: flood_detection_jupyter
+    
+    # GPU support
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    
+    env_file:
+      - docker.env
+    
+    volumes:
+      # Mount entire project for development
+      - .:/app
+      - ./data:/app/data:ro
+      - ./notebooks:/app/notebooks
+    
+    ports:
+      - "8889:8888"  # Jupyter Lab
+      - "6007:6006"  # TensorBoard
+    
+    command: >
+      bash -c "
+        jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root 
+        --NotebookApp.token='' --NotebookApp.password=''
+      "
+    
+    profiles:
+      - dev
+
+  # ============================================================================
+  # Training Service
+  # ============================================================================
+  training:
+    extends:
+      service: flood-detection
+    container_name: flood_detection_training
+    
+    # Override command for training
+    command: python flood.py
+    
+    # Additional environment for training
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+      - TF_CPP_MIN_LOG_LEVEL=1
+    
+    profiles:
+      - training
+
+  # ============================================================================
+  # Inference Service  
+  # ============================================================================
+  inference:
+    extends:
+      service: flood-detection
+    container_name: flood_detection_inference
+    
+    # Override for inference
+    command: python inference_all.py
+    
+    profiles:
+      - inference
+
+  # ============================================================================
+  # TensorBoard Service
+  # ============================================================================
+  tensorboard:
+    extends:
+      service: flood-detection
+    container_name: flood_detection_tensorboard
+    
+    ports:
+      - "6008:6006"
+    
+    command: tensorboard --logdir=/app/training_logs --host=0.0.0.0 --port=6006
+    
+    volumes:
+      - ./training_logs:/app/training_logs:ro
+    
+    profiles:
+      - monitoring
+
+# ============================================================================
+# Networks
+# ============================================================================
+networks:
+  default:
+    driver: bridge
+
+# ============================================================================
+# Volumes (for persistent data)
+# ============================================================================
+volumes:
+  model_cache:
+    driver: local
+  training_data:
+    driver: local

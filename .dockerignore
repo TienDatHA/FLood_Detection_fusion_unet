@@ -1,0 +1,143 @@
+# Docker ignore file for Flood Detection System
+
+# =============================================================================
+# VERSION CONTROL
+# =============================================================================
+.git
+.gitignore
+.gitattributes
+
+# =============================================================================
+# DOCUMENTATION AND MARKDOWN
+# =============================================================================
+*.md
+README*
+CHANGELOG*
+LICENSE*
+ARCHITECTURE.md
+PATH_REMEDIATION.md
+
+# =============================================================================
+# DEVELOPMENT FILES
+# =============================================================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# =============================================================================
+# PYTHON CACHE AND COMPILED FILES
+# =============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# =============================================================================
+# VIRTUAL ENVIRONMENTS
+# =============================================================================
+.env
+.env.*
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# =============================================================================
+# JUPYTER NOTEBOOKS  
+# =============================================================================
+.ipynb_checkpoints
+*.ipynb
+
+# =============================================================================
+# DATA AND MODEL FILES (LARGE FILES)
+# =============================================================================
+# Raw data (usually mounted as volumes)
+data/
+dataset/
+Sen1Flood11/
+Test_data/
+Bench_Mark/
+
+# Model weights and checkpoints
+*.h5
+*.hdf5
+*.pth
+*.pt
+*.pkl
+*.pickle
+weights/
+models/
+checkpoints/
+
+# Output directories (mounted as volumes)
+outputs/
+results/
+inference_results/
+training_logs/
+evaluation_logs/
+visual_outputs/
+dem_visualizations/
+final_flood_results/
+eval_results/
+Pred_Mask/
+
+# Image files
+*.tif
+*.tiff
+*.png
+*.jpg
+*.jpeg
+
+# Archive files
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# =============================================================================
+# LOGS AND TEMPORARY FILES
+# =============================================================================
+logs/
+*.log
+*.out
+tmp/
+temp/
+
+# =============================================================================
+# OS GENERATED FILES
+# =============================================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# =============================================================================
+# DOCKER SPECIFIC
+# =============================================================================
+Dockerfile*
+docker-compose*
+.dockerignore

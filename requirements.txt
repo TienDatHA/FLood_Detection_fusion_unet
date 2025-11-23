@@ -1,0 +1,50 @@
+# Requirements for Flood Detection System
+# Base scientific computing stack
+numpy==1.24.3
+scipy==1.11.4
+pandas==2.0.3
+scikit-learn==1.3.2
+
+# Visualization
+matplotlib==3.7.5
+seaborn==0.13.0
+plotly==5.17.0
+
+# Geospatial libraries (GDAL version should match system)
+rasterio==1.3.9
+fiona==1.9.5
+shapely==2.0.2
+pyproj==3.6.1
+rtree==1.1.0
+
+# Deep Learning
+tensorflow==2.15.0
+tensorflow-addons==0.23.0
+segmentation-models==1.0.1
+
+# Computer Vision
+opencv-python==4.8.1.78
+Pillow==10.1.0
+albumentations==1.3.1
+imgaug==0.4.0
+
+# ML Tools and Monitoring
+tensorboard==2.15.1
+tqdm==4.66.1
+
+# Development and Notebooks
+jupyter==1.0.0
+ipykernel==6.26.0
+notebook==7.0.6
+
+# Configuration and Utilities
+python-dotenv==1.0.0
+pyyaml==6.0.1
+click==8.1.7
+
+# Development tools (optional for dev image)
+pytest==7.4.3
+pytest-cov==4.1.0
+flake8==6.1.0
+black==23.11.0
+isort==5.12.0
